@@ -16,9 +16,13 @@ class CamFront:
         self.standard_shoulder_y = None # 校準線
         self.hunch_thresh = 20
 
+        # 轉身狀態
+        self.turning_dx = None
+
         # NEW 起坐
         self.standard_neck_y = None
         self.is_standing = False
+        self.standing_color = (0,255,0)
 
     def open(self):
         print(f">>> 開啟 Front Cam (ID: {self.id})...")
@@ -39,6 +43,10 @@ class CamFront:
     def set_neck_calibration(self, neck_y):
         self.standard_neck_y = neck_y
         print(f"[Front] 校準完成，頸部標準線 Y = {neck_y:.1f}")
+
+    def set_turning_calibration(self, dx):
+        self.turning_dx = dx
+        print(f"[Front] 校準完成，轉身基準 dx = {dx:.1f}")
 
     def process_frame(self, pose_estimator):
         """ 讀取 -> 去畸變 -> 偵測 -> 計算邏輯 -> 繪圖 """
@@ -83,11 +91,13 @@ class CamFront:
                 # 轉身 NEW
                 turning = False
                 turning_color = (0,255,0)
-                dx_r = abs(f_neck[0] - f_lsh[0] + 0.0001)
-                dx_l = abs(f_neck[0] - f_rsh[0] + 0.0001)
-                if dx_l/dx_r < 0.6 or dx_r/dx_l <0.6:
-                    turning = True
-                    turning_color = (0,0,255)
+                if self.turning_dx is not None:
+                    if dx/self.turning_dx <0.9:
+                        turning = True
+                        turning_color = (0,0,255)
+                    elif dx/self.turning_dx > 0.95:
+                        turning = False
+                        turning_color = (0,255,0)
 
                 # NEW 起坐
                 neck_calib_val = f_neck[1]
@@ -95,8 +105,10 @@ class CamFront:
                     diff_neck_y = self.standard_neck_y - neck_calib_val
                     if diff_neck_y > 80:
                         self.is_standing = True
+                        self.standing_color = (0,0,255)
                     elif diff_neck_y < 40:
                         self.is_standing = False
+                        self.standing_color = (0,255,0)
 
                 # 最低點
                 lowest_y = max(f_lsh[1], f_rsh[1])
@@ -124,10 +136,11 @@ class CamFront:
                         hunch_txt = "Height: OK"
                         hunch_col = (0, 255, 0)
 
-                cv2.rectangle(drawn_img, (0, 0), (350, 190), (5,5,5), -1)
+                cv2.rectangle(drawn_img, (0, 0), (350, 170), (10,10,10), -1)
                 cv2.putText(drawn_img, f"Tilt: {angle:.1f}d ({tilt_status})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, tilt_color, 2)
                 cv2.putText(drawn_img, hunch_txt, (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.8, hunch_col, 2)
+                # NEW
                 cv2.putText(drawn_img,f"Turn: {turning}",(10,110),cv2.FONT_HERSHEY_SIMPLEX, 0.8, turning_color, 2)
-                cv2.putText(drawn_img, f"Standing: {self.is_standing}",(10,170),cv2.FONT_HERSHEY_COMPLEX,0.8,turning_color)
+                cv2.putText(drawn_img, f"Standing: {self.is_standing}",(10,150),cv2.FONT_HERSHEY_SIMPLEX,0.8,self.standing_color,2)
 
-        return drawn_img, shoulder_calib_val, neck_calib_val, kps
+        return drawn_img, shoulder_calib_val, neck_calib_val, dx, kps

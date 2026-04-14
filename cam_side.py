@@ -97,7 +97,7 @@ class CamSide:
             # 取得右耳(17)與右肩(2)的 2D 像素座標
             # 如果是拍左側，請改用 左耳(18) 與 左肩(5)
             s_ear = p_side[17][:2] 
-            s_sh = p_side[2][:2]   
+            s_sh = p_side[2][:2]
             s_rw = p_side[4][:2] #NEW 4左手腕
             s_lw = p_side[7][:2] #NEW 7右手腕
             s_nose = p_side[0][:2] #NEW 0鼻子
@@ -136,7 +136,7 @@ class CamSide:
                     status = "Good"
                     color = (0, 255, 0)
                     
-                    # 判定邏輯：超過 15 度就紅字
+                    # 判定邏輯：超過 10 度就紅字
                     if final_angle > 10: 
                         status = "Neck Fwd"
                         color = (0, 0, 255)
@@ -144,13 +144,12 @@ class CamSide:
                     # 伸展 NEW
                     stretching = False
                     stretching_color = (0,255,0)
-                    if (s_rw[1] > 0 and s_rw[1] > s_nose[1]) or (s_lw[1] > 0 and s_lw[1] > s_nose[1]):
+                    if (s_rw[1] > 0 and s_rw[1] < s_nose[1]) or (s_lw[1] > 0 and s_lw[1] < s_nose[1]):
                         stretching = True
                         stretching_color = (0,0,255)
 
-                    
                     # 繪製資訊背景板
-                    cv2.rectangle(drawn_img, (0, 0), (360, 90), (0,0,0), -1)
+                    cv2.rectangle(drawn_img, (0, 0), (360, 110), (0,0,0), -1)
                     
                     # 顯示最終角度 (大字)
                     cv2.putText(drawn_img, f"Angle: {final_angle:.1f}d", (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, color, 2)
@@ -158,8 +157,9 @@ class CamSide:
                     # 顯示原始數據 (小字，讓您知道 Offset 有沒有在運作)
                     # Raw: 22.0, Off: 22.0 -> 結果就會是 0
                     info_txt = f"Raw:{raw_angle:.1f} | Off:{self.angle_offset:.1f}"
-                    cv2.putText(drawn_img, info_txt, (10, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1)
-                    cv2.putText(drawn_img,f"Stretching: {stretching}",(10,150),cv2.FONT_HERSHEY_SIMPLEX, 0.8, stretching_color, 2)
+                    cv2.putText(drawn_img, info_txt, (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1)
+                    # NEW
+                    cv2.putText(drawn_img,f"Stretching: {stretching}",(10,80),cv2.FONT_HERSHEY_SIMPLEX, 0.8, stretching_color, 2)
 
                     # 畫線
                     cv2.line(drawn_img, (int(s_sh[0]), int(s_sh[1])), (int(s_ear[0]), int(s_ear[1])), color, 3)
