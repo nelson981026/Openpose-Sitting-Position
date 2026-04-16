@@ -24,13 +24,13 @@ def main():
         ret2, frame2 = side.cap.read()
         if not ret1 or not ret2: break
 
-        vis_f = cv2.undistort(frame1, front.K, front.D)
-        kps_f, _ = pose.detect(vis_f)
+        # vis_f = cv2.undistort(frame1, front.K, front.D)
+        # kps_f, _ = pose.detect(vis_f)
 
-        img_f, kps_f = front.process_frame(pose) # 假設我們加了這個方法，或修改原方法
+        img_f, kps_f = front.process_frame(frame1, pose) # 假設我們加了這個方法，或修改原方法
         # 3. 讓每個相機各自處理自己的畫面
         #    注意：我們把 pose 傳進去，讓相機自己去呼叫 detect
-        img_s = side.process_frame(pose, kps_front=kps_f)
+        img_s = side.process_frame(frame2, pose, kps_front=kps_f)
 
         if img_f is None or img_s is None:
             print("讀取影像錯誤")

@@ -52,12 +52,12 @@ class CamFront:
             self.turning_dx = self.current_dx
             print(f"[Front] 校準完成，轉身基準 dx = {self.turning_dx:.1f}")
 
-    def process_frame(self, pose_estimator):
+    def process_frame(self, raw_frame, pose_estimator):
         """ 讀取 -> 去畸變 -> 偵測 -> 計算邏輯 -> 繪圖 """
         if not self.cap: return None, None
         
-        ret, raw_frame = self.cap.read()
-        if not ret: return None, None
+        # ret, raw_frame = self.cap.read()
+        # if not ret: return None, None
 
         # 去畸變
         img = cv2.undistort(raw_frame, self.K, self.D)

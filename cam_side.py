@@ -72,14 +72,14 @@ class CamSide:
         pt_4d = cv2.triangulatePoints(P1, P2, pt1_norm, pt2_norm)
         return (pt_4d[:3] / pt_4d[3]).flatten()
 
-    def process_frame(self, pose_estimator, kps_front=None):
+    def process_frame(self, raw_frame, pose_estimator, kps_front=None):
         """
         採用純 2D 模式，不依賴正面鏡頭，穩定性最高
         """
         if not self.cap: return None
         
-        ret, raw_frame = self.cap.read()
-        if not ret: return None
+        # ret, raw_frame = self.cap.read()
+        # if not ret: return None
 
         # 1. 去畸變 (很重要，讓直線變直)
         img = cv2.undistort(raw_frame, self.K, self.D)
