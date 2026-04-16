@@ -27,7 +27,7 @@ def main():
         vis_f = cv2.undistort(frame1, front.K, front.D)
         kps_f, _ = pose.detect(vis_f)
 
-        img_f, shoulder_calib_val, neck_calib_val, turning_dx, kps_f = front.process_frame(pose) # 假設我們加了這個方法，或修改原方法
+        img_f, kps_f = front.process_frame(pose) # 假設我們加了這個方法，或修改原方法
         # 3. 讓每個相機各自處理自己的畫面
         #    注意：我們把 pose 傳進去，讓相機自己去呼叫 detect
         img_s = side.process_frame(pose, kps_front=kps_f)
@@ -49,12 +49,7 @@ def main():
             break
         elif key == ord('c'):
             # 若 Front Cam 有回傳可用的校準值，就設定回去
-            if shoulder_calib_val is not None:
-                front.set_shoulder_calibration(shoulder_calib_val)
-            if neck_calib_val is not None:
-                front.set_neck_calibration(neck_calib_val)
-            if turning_dx is not None:
-                front.set_turning_calibration(turning_dx)
+            front.set_calibration()
             
             # 2. 校準頸部角度 (Side) - 把現在姿勢歸零
             side.set_calibration()

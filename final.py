@@ -89,9 +89,9 @@ cap0.set(3, 640); cap0.set(4, 480)
 cap1.set(3, 640); cap1.set(4, 480)
 
 if not cap0.isOpened() or not cap1.isOpened():
-    print("❌ 鏡頭開啟失敗")
+    print("鏡頭開啟失敗")
 else:
-    print("✅ 鏡頭開啟成功，開始執行 (按 q 離開)...")
+    print("鏡頭開啟成功，開始執行 (按 q 離開)...")
     
     while True:
         ret0, img0 = cap0.read()
@@ -108,7 +108,7 @@ else:
             # 這裡如果 OpenPose 參數沒設好，C++ 會崩潰
             opWrapper.emplaceAndPop(op.VectorDatum([d0, d1]))
         except Exception as e:
-            print(f"\n❌ OpenPose 執行錯誤: {e}")
+            print(f"\nOpenPose 執行錯誤: {e}")
             break
         
         # 取得畫面 (如果 frame_undistort=True，這裡的圖會是去畸變後的)

@@ -38,7 +38,7 @@ class CamSide:
     def set_calibration(self):
         """ 當使用者坐正時呼叫此函式，將當下角度設為 0 度基準 """
         self.angle_offset = self.current_raw_angle
-        print(f">>> [Side] 側面校準完成！Offset 設定為: {self.angle_offset:.2f} 度")
+        print(f"[Side] 側面校準完成 Offset 設定為: {self.angle_offset:.2f} 度")
 
     def compute_extrinsics(self):
         """ 根據角度與位置計算 R, T 矩陣 """
@@ -149,7 +149,7 @@ class CamSide:
                         stretching_color = (0,0,255)
 
                     # 繪製資訊背景板
-                    cv2.rectangle(drawn_img, (0, 0), (360, 110), (0,0,0), -1)
+                    cv2.rectangle(drawn_img, (0, 0), (240, 125), (0,0,0), -1)
                     
                     # 顯示最終角度 (大字)
                     cv2.putText(drawn_img, f"Angle: {final_angle:.1f}d", (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, color, 2)
@@ -157,7 +157,7 @@ class CamSide:
                     # 顯示原始數據 (小字，讓您知道 Offset 有沒有在運作)
                     # Raw: 22.0, Off: 22.0 -> 結果就會是 0
                     info_txt = f"Raw:{raw_angle:.1f} | Off:{self.angle_offset:.1f}"
-                    cv2.putText(drawn_img, info_txt, (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1)
+                    cv2.putText(drawn_img, info_txt, (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1)
                     # NEW
                     cv2.putText(drawn_img,f"Stretching: {stretching}",(10,80),cv2.FONT_HERSHEY_SIMPLEX, 0.8, stretching_color, 2)
 
